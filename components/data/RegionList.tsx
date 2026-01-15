@@ -43,8 +43,18 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
 
   return (
     <Card className="w-full bg-foreground/0 rounded p-4">
-      <CardHeader className="border-b-1 border-b-foreground-500 font-bold text-md">
-        Select a region to Explore Further
+      <CardHeader className="border-b-1 border-b-foreground-500 font-bold text-md flex flex-row justify-between items-baseline">
+        <span>Select a region to Explore Further</span>
+        <Input
+          fullWidth={false}
+          placeholder="Search regions..."
+          size="sm"
+          type="text"
+          value={search}
+          variant="underlined"
+          width="md"
+          onChange={(e) => setSearch(e.target.value)}
+        />
       </CardHeader>
       <CardBody>
         <Table
@@ -77,40 +87,28 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
             )}
           </TableBody>
         </Table>
-        <div className="flex justify-between items-center gap-4 mt-6">
-          <Input
-            fullWidth={false}
-            placeholder="Search regions..."
+        <div className="flex justify-center items-center gap-4 mt-6">
+          <Button
+            className="min-w-[90px]"
+            disabled={page === 1}
             size="sm"
-            type="text"
-            value={search}
             variant="flat"
-            width="md"
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <div className="flex flex-row items-center justify-center gap-4">
-            <Button
-              className="min-w-[90px]"
-              disabled={page === 1}
-              size="sm"
-              variant="flat"
-              onPress={() => setPage(page - 1)}
-            >
-              Previous
-            </Button>
-            <span className="font-medium text-sm">
-              Page {page} of {totalPages}
-            </span>
-            <Button
-              className="min-w-[90px]"
-              disabled={page === totalPages || totalPages === 0}
-              size="sm"
-              variant="flat"
-              onPress={() => setPage(page + 1)}
-            >
-              Next
-            </Button>
-          </div>
+            onPress={() => setPage(page - 1)}
+          >
+            Previous
+          </Button>
+          <span className="font-medium text-sm">
+            Page {page} of {totalPages}
+          </span>
+          <Button
+            className="min-w-[90px]"
+            disabled={page === totalPages || totalPages === 0}
+            size="sm"
+            variant="flat"
+            onPress={() => setPage(page + 1)}
+          >
+            Next
+          </Button>
         </div>
       </CardBody>
     </Card>
