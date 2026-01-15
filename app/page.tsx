@@ -1,7 +1,9 @@
 "use client";
+import { useEffect, useState } from "react";
+
 import { Warnings } from "@/components/data/Warnings";
 import { Summary } from "@/components/data/Summary";
-import { useEffect, useState } from "react";
+import { RegionList } from "@/components/data/RegionList";
 
 export default function HomePage() {
   const [data, setData] = useState<any>(null);
@@ -9,6 +11,7 @@ export default function HomePage() {
   useEffect(() => {
     async function fetchData() {
       const data = await fetch("/api/data").then((res) => res.json());
+
       setData(data);
     }
     fetchData();
@@ -18,7 +21,7 @@ export default function HomePage() {
     <div className="items-center justify-start flex h-full w-full flex-col gap-4">
       <Warnings />
       <Summary data={data} />
-      {/* You can use the fetched data here */}
+      <RegionList data={data} />
     </div>
   );
 }

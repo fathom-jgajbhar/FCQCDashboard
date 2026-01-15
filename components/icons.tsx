@@ -1,20 +1,10 @@
 import * as React from "react";
-
-import { IconSvgProps } from "@/types";
 import Image from "next/image";
 
-export const Logo: React.FC<IconSvgProps> = ({
-  size = 24,
-  width,
-  height,
-  ...props
-}) => (
-  <Image
-    src="/Fathom_logo.png"
-    alt="Fathom Logo"
-    width={size}
-    height={size}
-  />
+import { IconSvgProps } from "@/types";
+
+export const Logo: React.FC<IconSvgProps> = ({ size = 24 }) => (
+  <Image alt="Fathom Logo" height={size} src="/Fathom_logo.png" width={size} />
 );
 
 export const DiscordIcon: React.FC<IconSvgProps> = ({

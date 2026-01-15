@@ -1,39 +1,63 @@
 import { Card, CardBody, CardHeader } from "@heroui/card";
-import { useEffect } from "react";
+import {
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+} from "@heroui/table";
 
 export interface SummaryProps {
-  data?: any; 
+  data?: any;
 }
 
-export const Summary: React.FC<SummaryProps> = ({
-  data,
-}) => {
-  const firstDate = data?.date[0].label[0] ?? "Date unavailable";
-  const lastDate = data?.date[data?.date.length - 1].label[0]
+export const Summary: React.FC<SummaryProps> = ({ data }) => {
+  // Prepare summary values
+  const regionsCount = data?.region?.length ?? 0;
+  const forecastDaysCount = data?.date?.length ?? 0;
+  const firstDate = data?.date?.[0]?.label?.[0] ?? "Date unavailable";
+  const lastDate =
+    data?.date?.[data?.date?.length - 1]?.label?.[0] ?? "Date unavailable";
+  const variables =
+    data?.metadata?.variables
+      ?.map((v: any) => v.name.toUpperCase())
+      .join(", ") ?? "Unavailable";
+
+  // Table items
+  const items = [
+    { key: "regions", label: "Regions", value: regionsCount },
+    { key: "forecast_days", label: "Forecast Days", value: forecastDaysCount },
+    { key: "first_date", label: "First Date", value: firstDate },
+    { key: "last_date", label: "Last Date", value: lastDate },
+    {
+      key: "variables",
+      label: `Variables (${data?.metadata?.variables?.length ?? 0})`,
+      value: variables,
+    },
+  ];
 
   return (
-    <Card className="w-full p-4 bg-foreground/5 rounded">
-      <CardHeader className="border-b-1 border-b-foreground/10">
-        <h2 className="font-bold text-md">Summary</h2>
+    <Card className="w-full bg-foreground/5 rounded p-4">
+      <CardHeader className="border-b-1 border-b-foreground-500 font-bold text-md">
+        Summary
       </CardHeader>
-      <CardBody className="w-full h-full flex flex-col gap-2 items-baseline justify-between text-sm">
-        <div>Regions : {data ? data.region.length : 0}</div>
-        <div className="flex flex-row justify-between w-full"><span>Forecast days : {data ? data.date.length : 0}</span>
-          <div>
-                   First date: {firstDate}
-                 </div>
-                 <div>
-                   Last date: {lastDate}
-                 </div>
-        </div>
-        <div className="flex flex-row gap-2 items-center justify-center">
-          <span>Variables({data?.metadata.variables.length}) :</span>
-          {/*<span>{data?.metadata.variables[0]?.name ?? "Unavailable"}</span>*/}
-          {data?.metadata.variables.map((variable: any, index: number) => (
-            <span>{variable.name.toUpperCase()}{index < data?.metadata.variables.length - 1 ? "," : ""}</span>
-          ),)}
-        </div>
+      <CardBody>
+        <Table hideHeader isStriped removeWrapper aria-label="Summary Table">
+          <TableHeader>
+            <TableColumn key="name">Name</TableColumn>
+            <TableColumn key="value">Value</TableColumn>
+          </TableHeader>
+          <TableBody>
+            {items.map((item) => (
+              <TableRow key={item.key}>
+                <TableCell>{item.label}</TableCell>
+                <TableCell>{item.value}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </CardBody>
     </Card>
-  )
+  );
 };
