@@ -15,7 +15,7 @@
     "@heroui/avatar": "2.2.24",
     "@heroui/badge": "2.2.18",
     "@heroui/button": "2.2.29",
-    "@heroui/card": "2.2.27",
+    "@heroui/card": "^2.2.27",
     "@heroui/chip": "2.2.24",
     "@heroui/code": "2.2.22",
     "@heroui/divider": "2.2.21",
@@ -54,10 +54,12 @@
     "clsx": "2.1.1",
     "framer-motion": "11.18.2",
     "intl-messageformat": "10.7.16",
+    "lucide": "^0.562.0",
     "next": "15.5.9",
     "next-themes": "0.4.6",
     "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "react-dom": "18.3.1",
+    "recharts": "^3.6.0"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "15.5.9",
