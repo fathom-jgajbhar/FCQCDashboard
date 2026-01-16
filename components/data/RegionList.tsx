@@ -10,6 +10,7 @@ import {
 } from "@heroui/table";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
+import { redirect } from "next/navigation";
 
 export interface RegionListProps {
   data?: any;
@@ -68,6 +69,7 @@ export const RegionList: React.FC<RegionListProps> = ({ data }) => {
             const selected = Array.from(keys)[0];
 
             setSelectedRegion(selected as string);
+            redirect(`/regions/${selected}`);
           }}
         >
           <TableHeader>
