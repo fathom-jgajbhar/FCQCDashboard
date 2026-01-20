@@ -21,7 +21,6 @@ export default function HomePage() {
     <div className="items-center justify-start flex h-full w-full flex-col gap-4">
       <Warnings />
       <Summary data={data} />
-      <RegionList data={data} />
     </div>
   );
 }

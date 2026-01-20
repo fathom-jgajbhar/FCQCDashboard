@@ -4,11 +4,13 @@ import {
   NavbarMenuToggle,
   NavbarBrand,
   NavbarItem,
+  NavbarMenu,
 } from "@heroui/navbar";
 import NextLink from "next/link";
 
 import { ThemeSwitch } from "@/components/theme-switch";
 import { Logo } from "@/components/icons";
+import { siteConfig } from "@/config/site";
 
 export const Navbar = () => {
   return (
@@ -26,6 +28,15 @@ export const Navbar = () => {
         className="hidden sm:flex basis-1/5 sm:basis-full"
         justify="end"
       >
+        <NavbarItem>
+          <ul className="text-sm items-center justify-center">
+            {siteConfig.navMenuItems.map((item) => (
+              <li key={item.href}>
+                <NextLink href={item.href}>{item.label}</NextLink>
+              </li>
+            ))}
+          </ul>
+        </NavbarItem>
         <NavbarItem className="hidden sm:flex gap-2">
           <ThemeSwitch />
         </NavbarItem>
@@ -34,6 +45,15 @@ export const Navbar = () => {
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
         <ThemeSwitch />
         <NavbarMenuToggle />
+        <NavbarMenu>
+          <ul className="text-sm items-center justify-center">
+            {siteConfig.navMenuItems.map((item) => (
+              <li key={item.href}>
+                <NextLink href={item.href}>{item.label}</NextLink>
+              </li>
+            ))}
+          </ul>
+        </NavbarMenu>
       </NavbarContent>
     </HeroUINavbar>
   );

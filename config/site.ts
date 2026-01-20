@@ -4,16 +4,16 @@ export const siteConfig = {
   name: "FischCast QC Dashboard",
   description: "A quality control dashboard for FischCast project data.",
   navItems: [
-    // {
-    //   label: "Home",
-    //   href: "/",
-    // },
+    {
+      label: "Regions",
+      href: "/regions",
+    },
   ],
   navMenuItems: [
-    // {
-    //   label: "",
-    //   href: ""
-    // }
+    {
+      label: "Regions",
+      href: "/regions",
+    },
   ],
   links: {
     github: "https://github.com/heroui-inc/heroui",
