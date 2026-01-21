@@ -197,7 +197,7 @@ const RegionTestPage: React.FC = () => {
             isIconOnly
             as={Link}
             className="hover:bg-default-100"
-            href="/regions"
+            href="/"
             variant="light"
           >
             <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -247,7 +247,7 @@ const RegionTestPage: React.FC = () => {
           isIconOnly
           as={Link}
           className="hover:bg-default-100 flex-shrink-0 mt-1"
-          href="/regions"
+          href="/"
           variant="light"
         >
           <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" />
