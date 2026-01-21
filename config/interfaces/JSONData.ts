@@ -4,7 +4,7 @@ import { Region } from "./Region";
 
 // Main interface for JSON data structure
 export interface JSONData {
-    metadata : JSONMetadata;
-    date: JSONDataDate[];
-    region: Region[];
-} 
+  metadata: JSONMetadata;
+  date: JSONDataDate[];
+  region: Region[];
+}

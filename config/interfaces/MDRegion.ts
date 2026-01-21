@@ -1,5 +1,5 @@
 export interface MDRegion {
-    description: string;
-    length: number;
-    labels: string[];
+  description: string;
+  length: number;
+  labels: string[];
 }

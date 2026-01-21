@@ -1,4 +1,4 @@
 export interface Variable {
-    label: string;
-    value: number[][];
+  label: string;
+  value: number[][];
 }
