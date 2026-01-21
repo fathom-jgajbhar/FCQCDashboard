@@ -10,7 +10,6 @@ import NextLink from "next/link";
 
 import { ThemeSwitch } from "@/components/theme-switch";
 import { Logo } from "@/components/icons";
-import { siteConfig } from "@/config/site";
 
 export const Navbar = () => {
   return (
@@ -29,13 +28,13 @@ export const Navbar = () => {
         justify="end"
       >
         <NavbarItem>
-          <ul className="text-sm items-center justify-center">
+          {/* <ul className="text-sm items-center justify-center">
             {siteConfig.navMenuItems.map((item) => (
               <li key={item.href}>
                 <NextLink href={item.href}>{item.label}</NextLink>
               </li>
             ))}
-          </ul>
+          </ul> */}
         </NavbarItem>
         <NavbarItem className="hidden sm:flex gap-2">
           <ThemeSwitch />
@@ -46,13 +45,13 @@ export const Navbar = () => {
         <ThemeSwitch />
         <NavbarMenuToggle />
         <NavbarMenu>
-          <ul className="text-sm items-center justify-center">
+          {/* <ul className="text-sm items-center justify-center">
             {siteConfig.navMenuItems.map((item) => (
               <li key={item.href}>
                 <NextLink href={item.href}>{item.label}</NextLink>
               </li>
             ))}
-          </ul>
+          </ul> */}
         </NavbarMenu>
       </NavbarContent>
     </HeroUINavbar>

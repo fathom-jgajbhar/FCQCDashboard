@@ -4,7 +4,6 @@ import { useParams } from "next/navigation";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { Card, CardHeader, CardBody } from "@heroui/card";
-import { Chip } from "@heroui/chip";
 import { Alert } from "@heroui/alert";
 import { Skeleton } from "@heroui/skeleton";
 import { Tabs, Tab } from "@heroui/tabs";
@@ -251,7 +250,11 @@ const RegionTestPage: React.FC = () => {
         </div>
       </div>
 
-      <Tabs className="w-full" defaultSelectedKey="timeseries">
+      <Tabs
+        className="w-full"
+        defaultSelectedKey="timeseries"
+        variant="underlined"
+      >
         <Tab key="summary-stats" title="Summary Statistics">
           <div className="mt-3 sm:mt-6 grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6">
             {region.model.map((model) => (
