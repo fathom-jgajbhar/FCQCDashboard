@@ -251,53 +251,6 @@ const RegionTestPage: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
-        {region.model.map((model) => (
-          <Card key={model.id} className="hover:shadow-lg transition-shadow">
-            <CardHeader className="flex justify-between items-start sm:items-center pb-2 sm:pb-3 gap-2">
-              <h3 className="text-base sm:text-lg font-semibold">
-                {model.label}
-              </h3>
-              <Chip
-                className="flex-shrink-0"
-                color="secondary"
-                size="sm"
-                variant="flat"
-              >
-                {model.variable.length} metrics
-              </Chip>
-            </CardHeader>
-            <CardBody className="pt-2 sm:pt-0 px-3 sm:px-6 py-3 sm:py-4">
-              <div className="space-y-2">
-                {model.variable.slice(0, 3).map((variable) => {
-                  const summary = calculateMetricSummary(variable.value);
-
-                  return (
-                    <div
-                      key={variable.label}
-                      className="flex items-center justify-between text-sm"
-                    >
-                      <span className="flex items-center space-x-1">
-                        {getTrendIcon(summary.trend)}
-                        <span>{variable.label}</span>
-                      </span>
-                      <span className="font-mono text-xs text-default-600">
-                        {summary.avg.toFixed(3)}
-                      </span>
-                    </div>
-                  );
-                })}
-                {model.variable.length > 3 && (
-                  <p className="text-xs text-default-500">
-                    +{model.variable.length - 3} more metrics
-                  </p>
-                )}
-              </div>
-            </CardBody>
-          </Card>
-        ))}
-      </div>
-
       <Tabs className="w-full" defaultSelectedKey="timeseries">
         <Tab key="summary-stats" title="Summary Statistics">
           <div className="mt-3 sm:mt-6 grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6">
