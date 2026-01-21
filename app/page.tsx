@@ -6,6 +6,7 @@ import { Chip } from "@heroui/chip";
 import { Alert } from "@heroui/alert";
 import { Skeleton } from "@heroui/skeleton";
 import { Input } from "@heroui/input";
+import { Button } from "@heroui/button";
 import {
   Table,
   TableHeader,
@@ -14,7 +15,13 @@ import {
   TableRow,
   TableCell,
 } from "@heroui/table";
-import { Search, BarChart3, MapPin } from "lucide-react";
+import {
+  Search,
+  BarChart3,
+  MapPin,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface RegionData {
@@ -40,8 +47,9 @@ export default function RegionsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedRegion, setSelectedRegion] = useState<number | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     const fetchRegions = async () => {
@@ -82,6 +90,17 @@ export default function RegionsPage() {
         .toLowerCase()
         .includes(searchQuery.toLowerCase()),
     ) || [];
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredRegions.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedRegions = filteredRegions.slice(startIndex, endIndex);
+
+  // Reset to first page when search query changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
 
   const handleRegionSelect = (regionId: number) => {
     setSelectedRegion(regionId);
@@ -248,8 +267,8 @@ export default function RegionsPage() {
               </TableColumn>
             </TableHeader>
             <TableBody>
-              {filteredRegions.length > 0 ? (
-                filteredRegions.map((region) => (
+              {paginatedRegions.length > 0 ? (
+                paginatedRegions.map((region) => (
                   <TableRow
                     key={region.id}
                     className="cursor-pointer hover:bg-default-50"
@@ -298,6 +317,58 @@ export default function RegionsPage() {
               )}
             </TableBody>
           </Table>
+
+          {/* Pagination Controls */}
+          {filteredRegions.length > 0 && (
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-default-200">
+              <p className="text-sm text-default-500">
+                Showing <span className="font-semibold">{startIndex + 1}</span>{" "}
+                to{" "}
+                <span className="font-semibold">
+                  {Math.min(endIndex, filteredRegions.length)}
+                </span>{" "}
+                of{" "}
+                <span className="font-semibold">{filteredRegions.length}</span>{" "}
+                regions
+              </p>
+              <div className="flex items-center gap-2">
+                <Button
+                  isIconOnly
+                  disabled={currentPage === 1}
+                  size="sm"
+                  variant="bordered"
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </Button>
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (page) => (
+                      <Button
+                        key={page}
+                        className="min-w-10"
+                        color={currentPage === page ? "primary" : "default"}
+                        size="sm"
+                        variant={currentPage === page ? "solid" : "bordered"}
+                        onClick={() => setCurrentPage(page)}
+                      >
+                        {page}
+                      </Button>
+                    ),
+                  )}
+                </div>
+                <Button
+                  isIconOnly
+                  disabled={currentPage === totalPages}
+                  size="sm"
+                  variant="bordered"
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          )}
         </CardBody>
       </Card>
 
