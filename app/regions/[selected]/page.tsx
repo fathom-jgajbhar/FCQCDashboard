@@ -299,6 +299,62 @@ const RegionTestPage: React.FC = () => {
       </div>
 
       <Tabs className="w-full" defaultSelectedKey="timeseries">
+        <Tab key="summary-stats" title="Summary Statistics">
+          <div className="mt-3 sm:mt-6 grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6">
+            {region.model.map((model) => (
+              <Card key={model.id} className="p-2 sm:p-0">
+                <CardHeader className="p-3 sm:p-6 pb-2 sm:pb-3 flex-col items-start gap-1">
+                  <h3 className="text-base sm:text-lg font-semibold">
+                    {model.label} - Aggregated Metrics
+                  </h3>
+                  <p className="text-xs sm:text-sm text-default-500">
+                    Average across all timesteps and forecast days
+                  </p>
+                </CardHeader>
+                <CardBody className="p-3 sm:p-6 pt-2 sm:pt-0">
+                  <div className="space-y-3 sm:space-y-4">
+                    {model.variable.map((variable) => {
+                      const summary = calculateMetricSummary(variable.value);
+
+                      return (
+                        <div
+                          key={variable.label}
+                          className="border border-default-200 rounded-lg p-3"
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-medium">{variable.label}</h4>
+                            {getTrendIcon(summary.trend)}
+                          </div>
+                          <div className="grid grid-cols-3 gap-2 text-sm">
+                            <div>
+                              <p className="text-default-500">Min</p>
+                              <p className="font-mono">
+                                {summary.min.toFixed(4)}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-default-500">Avg</p>
+                              <p className="font-mono">
+                                {summary.avg.toFixed(4)}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-default-500">Max</p>
+                              <p className="font-mono">
+                                {summary.max.toFixed(4)}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardBody>
+              </Card>
+            ))}
+          </div>
+        </Tab>
+
         <Tab key="by-forecast-day" title="By Forecast Day">
           <div className="mt-3 sm:mt-6 space-y-4 sm:space-y-6">
             {forecastDayLabels.map((fdLabel, fdIndex) => (
@@ -373,68 +429,17 @@ const RegionTestPage: React.FC = () => {
           </div>
         </Tab>
 
-        <Tab key="summary-stats" title="Summary Statistics">
-          <div className="mt-3 sm:mt-6 grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6">
-            {region.model.map((model) => (
-              <Card key={model.id} className="p-2 sm:p-0">
-                <CardHeader className="p-3 sm:p-6 pb-2 sm:pb-3 flex-col items-start gap-1">
-                  <h3 className="text-base sm:text-lg font-semibold">
-                    {model.label} - Aggregated Metrics
-                  </h3>
-                  <p className="text-xs sm:text-sm text-default-500">
-                    Average across all timesteps and forecast days
-                  </p>
-                </CardHeader>
-                <CardBody className="p-3 sm:p-6 pt-2 sm:pt-0">
-                  <div className="space-y-3 sm:space-y-4">
-                    {model.variable.map((variable) => {
-                      const summary = calculateMetricSummary(variable.value);
-
-                      return (
-                        <div
-                          key={variable.label}
-                          className="border border-default-200 rounded-lg p-3"
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <h4 className="font-medium">{variable.label}</h4>
-                            {getTrendIcon(summary.trend)}
-                          </div>
-                          <div className="grid grid-cols-3 gap-2 text-sm">
-                            <div>
-                              <p className="text-default-500">Min</p>
-                              <p className="font-mono">
-                                {summary.min.toFixed(4)}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-default-500">Avg</p>
-                              <p className="font-mono">
-                                {summary.avg.toFixed(4)}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-default-500">Max</p>
-                              <p className="font-mono">
-                                {summary.max.toFixed(4)}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </CardBody>
-              </Card>
-            ))}
-          </div>
-        </Tab>
-
         <Tab key="rmse" title="RMSE Analysis">
           <Card className="mt-3 sm:mt-6 p-2 sm:p-0">
-            <CardHeader className="p-3 sm:p-6 pb-2 sm:pb-3">
+            <CardHeader className="p-3 sm:p-6 pb-2 sm:pb-3 flex-col items-start gap-1">
               <h3 className="text-base sm:text-lg font-semibold">
                 RMSE (Root Mean Square Error) Trends
               </h3>
+              <p className="text-xs sm:text-sm text-default-500 mt-1">
+                Shows how forecast accuracy changes over time. Lower RMSE values
+                indicate better model performance. Each line represents a
+                different model&apos;s error across forecast days.
+              </p>
             </CardHeader>
             <CardBody className="p-3 sm:p-6 pt-2 sm:pt-0">
               <RMSEAnalysisChart
@@ -449,27 +454,48 @@ const RegionTestPage: React.FC = () => {
 
         <Tab key="bias" title="Bias Analysis">
           <Card className="mt-3 sm:mt-6 p-2 sm:p-0">
-            <CardHeader className="p-3 sm:p-6 pb-2 sm:pb-3">
+            <CardHeader className="p-3 sm:p-6 pb-2 sm:pb-3 flex-col items-start gap-1">
               <h3 className="text-base sm:text-lg font-semibold">
                 Bias Analysis by Model
               </h3>
+              <p className="text-xs sm:text-sm text-default-500 mt-1">
+                Measures systematic forecast error (over-prediction or
+                under-prediction). Values near zero indicate unbiased forecasts.
+                Positive bias = over-prediction, negative bias =
+                under-prediction.
+              </p>
             </CardHeader>
             <CardBody className="p-3 sm:p-6 pt-2 sm:pt-0">
-              <BiasAnalysisChart
-                calculateMetricSummary={calculateMetricSummary}
-                modelColors={modelColors}
-                models={region.model}
-              />
+              {region.model.some((model) =>
+                model.variable.some((v) => v.label.toUpperCase() === "BIAS"),
+              ) ? (
+                <BiasAnalysisChart
+                  calculateMetricSummary={calculateMetricSummary}
+                  modelColors={modelColors}
+                  models={region.model}
+                />
+              ) : (
+                <Alert color="warning" variant="flat">
+                  No BIAS data available for these models. This metric may not
+                  be included in the current dataset.
+                </Alert>
+              )}
             </CardBody>
           </Card>
         </Tab>
 
         <Tab key="comparison" title="Model Comparison">
           <Card className="mt-3 sm:mt-6 p-2 sm:p-0">
-            <CardHeader className="p-3 sm:p-6 pb-2 sm:pb-3">
+            <CardHeader className="p-3 sm:p-6 pb-2 sm:pb-3 flex-col items-start gap-1">
               <h3 className="text-base sm:text-lg font-semibold">
                 Model Performance Comparison
               </h3>
+              <p className="text-xs sm:text-sm text-default-500 mt-1">
+                Shows aggregated metrics for each model. Trend arrows indicate
+                if the metric is improving (↑), degrading (↓), or stable (−) by
+                comparing the last quarter vs. first quarter of data (±5%
+                threshold).
+              </p>
             </CardHeader>
             <CardBody className="p-3 sm:p-6 pt-2 sm:pt-0">
               <ModelComparisonTable
@@ -481,10 +507,16 @@ const RegionTestPage: React.FC = () => {
           </Card>
 
           <Card className="mt-4 sm:mt-6 p-2 sm:p-0">
-            <CardHeader className="p-3 sm:p-6 pb-2 sm:pb-3">
+            <CardHeader className="p-3 sm:p-6 pb-2 sm:pb-3 flex-col items-start gap-1">
               <h3 className="text-base sm:text-lg font-semibold">
                 Model Performance Radar
               </h3>
+              <p className="text-xs sm:text-sm text-default-500 mt-1">
+                Multi-dimensional comparison of model performance across all
+                metrics. Each axis represents a metric, and the polygon shape
+                shows how each model performs. Larger polygons indicate better
+                overall performance (assumes lower metric values are better).
+              </p>
             </CardHeader>
             <CardBody className="p-3 sm:p-6 pt-2 sm:pt-0">
               <ModelPerformanceRadar

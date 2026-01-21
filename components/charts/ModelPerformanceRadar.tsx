@@ -34,7 +34,7 @@ export const ModelPerformanceRadar: React.FC<ModelPerformanceRadarProps> = ({
 
   const radarData = models[0]?.variable.map((variable) => {
     const dataPoint: any = {
-      metric: variable.label,
+      metric: variable.label.substring(0, 15), // Truncate long names for readability
     };
 
     models.forEach((model) => {
@@ -43,7 +43,8 @@ export const ModelPerformanceRadar: React.FC<ModelPerformanceRadarProps> = ({
       if (modelVar) {
         const summary = calculateMetricSummary(modelVar.value);
 
-        dataPoint[model.label] = summary.avg;
+        // Normalize values to 0-100 scale for better radar visualization
+        dataPoint[model.label] = Math.min(100, Math.max(0, summary.avg * 10));
       }
     });
 
@@ -57,9 +58,13 @@ export const ModelPerformanceRadar: React.FC<ModelPerformanceRadarProps> = ({
     >
       <ResponsiveContainer>
         <RadarChart data={radarData}>
-          <PolarGrid />
-          <PolarAngleAxis dataKey="metric" />
-          <PolarRadiusAxis />
+          <PolarGrid stroke={resolvedTheme === "dark" ? "#444" : "#e0e0e0"} />
+          <PolarAngleAxis dataKey="metric" tick={{ fontSize: 12 }} />
+          <PolarRadiusAxis
+            angle={90}
+            domain={[0, 100]}
+            tick={{ fontSize: 11 }}
+          />
           <Tooltip
             contentStyle={{
               backgroundColor: resolvedTheme === "dark" ? "#1f1f1f" : "#ffffff",
@@ -77,6 +82,7 @@ export const ModelPerformanceRadar: React.FC<ModelPerformanceRadarProps> = ({
               fillOpacity={0.3}
               name={model.label}
               stroke={modelColors[index % modelColors.length]}
+              strokeWidth={2}
             />
           ))}
         </RadarChart>
