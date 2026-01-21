@@ -30,7 +30,6 @@ import {
   Radar,
 } from "recharts";
 import { ArrowLeft, TrendingUp, TrendingDown, Minus } from "lucide-react";
-import { resolveElements } from "framer-motion";
 
 const RegionTestPage: React.FC = () => {
     const { selected } = useParams<{ selected: string }>();
@@ -322,7 +321,7 @@ const RegionTestPage: React.FC = () => {
                                                 <div className="flex flex-row gap-4 w-full h-full" style={{ height: "350px" }}>
                                                     <ResponsiveContainer>
                                                         <LineChart data={chartData}>
-                                                            <CartesianGrid strokeDasharray="3 3" />
+                                                            <CartesianGrid strokeDasharray="3 3" stroke={resolvedTheme === "dark" ? "#444" : "#e0e0e0"} />
                                                             <XAxis 
                                                                 dataKey="date"
                                                                 label={{ value: 'Date', position: 'insideBottom', offset: -5 }}
@@ -347,7 +346,7 @@ const RegionTestPage: React.FC = () => {
                                                             <Line
                                                                 dataKey="value"
                                                                 name={variable.label}
-                                                                stroke="#8884d8"
+                                                                stroke={modelColors[0]}
                                                                 type="monotone"
                                                                 strokeWidth={2}
                                                                 dot={false}
@@ -377,74 +376,76 @@ const RegionTestPage: React.FC = () => {
                                     </p>
                                 </CardHeader>
                                 <CardBody>
-                                    {region.model[0]?.variable.map((variable) => {
-                                        // Consolidate all model data into a single dataset
-                                        const specificDateLabels = getDateLabels(fdIndex);
-                                        const consolidatedData: Array<Record<string, any>> = [];
-                                        
-                                        // Get the first model's timesteps to establish the base structure
-                                        const firstModelVar = region.model[0].variable.find(
-                                            (v) => v.label === variable.label
-                                        );
-                                        
-                                        if (firstModelVar) {
-                                            const dayData = firstModelVar.value[fdIndex];
-                                            if (dayData) {
-                                                dayData.forEach((_, timestepIndex) => {
-                                                    const dataPoint: Record<string, any> = {
-                                                        timestep: timestepIndex,
-                                                        date: specificDateLabels[timestepIndex] || `T${timestepIndex}`,
-                                                    };
-                                                    
-                                                    // Add each model's value for this timestep
-                                                    region.model.forEach((model) => {
-                                                        const modelVar = model.variable.find(
-                                                            (v) => v.label === variable.label
-                                                        );
-                                                        if (modelVar && modelVar.value[fdIndex]?.[timestepIndex] !== undefined) {
-                                                            dataPoint[model.label] = modelVar.value[fdIndex][timestepIndex];
-                                                        }
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                        {region.model[0]?.variable.map((variable) => {
+                                            // Consolidate all model data into a single dataset
+                                            const specificDateLabels = getDateLabels(fdIndex);
+                                            const consolidatedData: Array<Record<string, any>> = [];
+                                            
+                                            // Get the first model's timesteps to establish the base structure
+                                            const firstModelVar = region.model[0].variable.find(
+                                                (v) => v.label === variable.label
+                                            );
+                                            
+                                            if (firstModelVar) {
+                                                const dayData = firstModelVar.value[fdIndex];
+                                                if (dayData) {
+                                                    dayData.forEach((_, timestepIndex) => {
+                                                        const dataPoint: Record<string, any> = {
+                                                            timestep: timestepIndex,
+                                                            date: specificDateLabels[timestepIndex] || `T${timestepIndex}`,
+                                                        };
+                                                        
+                                                        // Add each model's value for this timestep
+                                                        region.model.forEach((model) => {
+                                                            const modelVar = model.variable.find(
+                                                                (v) => v.label === variable.label
+                                                            );
+                                                            if (modelVar && modelVar.value[fdIndex]?.[timestepIndex] !== undefined) {
+                                                                dataPoint[model.label] = modelVar.value[fdIndex][timestepIndex];
+                                                            }
+                                                        });
+                                                        
+                                                        consolidatedData.push(dataPoint);
                                                     });
-                                                    
-                                                    consolidatedData.push(dataPoint);
-                                                });
+                                                }
                                             }
-                                        }
-                                        
-                                        return (
-                                            <div key={variable.label} className="mb-8 last:mb-0">
-                                                <h4 className="text-lg font-medium mb-3">{variable.label}</h4>
-                                                <div style={{ width: "100%", height: "350px" }}>
-                                                    <ResponsiveContainer>
-                                                        <LineChart data={consolidatedData}>
-                                                            <CartesianGrid strokeDasharray="3 3" />
-                                                            <XAxis 
-                                                                dataKey="timestep"
-                                                                label={{ value: 'Timestep', position: 'insideBottom', offset: -5 }}
-                                                            />
-                                                            <YAxis />
-                                                            <Tooltip 
-                                                                labelFormatter={(value) => `Timestep: ${value}`}
-                                                            />
-                                                            <Legend />
-                                                            {region.model.map((model, modelIndex) => (
-                                                                <Line
-                                                                    key={model.id}
-                                                                    dataKey={model.label}
-                                                                    name={model.label}
-                                                                    stroke={modelColors[modelIndex % modelColors.length]}
-                                                                    type="monotone"
-                                                                    strokeWidth={2}
-                                                                    dot={false}
-                                                                    connectNulls
+                                            
+                                            return (
+                                                <div key={variable.label}>
+                                                    <h4 className="text-lg font-medium mb-3">{variable.label}</h4>
+                                                    <div style={{ width: "100%", height: "350px" }}>
+                                                        <ResponsiveContainer>
+                                                            <LineChart data={consolidatedData}>
+                                                                <CartesianGrid strokeDasharray="3 3" stroke={resolvedTheme === "dark" ? "#444" : "#e0e0e0"} />
+                                                                <XAxis 
+                                                                    dataKey="timestep"
+                                                                    label={{ value: 'Timestep', position: 'insideBottom', offset: -5 }}
                                                                 />
-                                                            ))}
-                                                        </LineChart>
-                                                    </ResponsiveContainer>
+                                                                <YAxis />
+                                                                <Tooltip 
+                                                                    labelFormatter={(value) => `Timestep: ${value}`}
+                                                                />
+                                                                <Legend />
+                                                                {region.model.map((model, modelIndex) => (
+                                                                    <Line
+                                                                        key={model.id}
+                                                                        dataKey={model.label}
+                                                                        name={model.label}
+                                                                        stroke={modelColors[modelIndex % modelColors.length]}
+                                                                        type="monotone"
+                                                                        strokeWidth={2}
+                                                                        dot={false}
+                                                                        connectNulls
+                                                                    />
+                                                                ))}
+                                                            </LineChart>
+                                                        </ResponsiveContainer>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        );
-                                    })}
+                                            );
+                                        })}
+                                    </div>
                                 </CardBody>
                             </Card>
                         ))}
@@ -569,7 +570,7 @@ const RegionTestPage: React.FC = () => {
                             <div style={{ width: "100%", height: "400px" }}>
                                 <ResponsiveContainer>
                                     <LineChart>
-                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <CartesianGrid strokeDasharray="3 3" stroke={resolvedTheme === "dark" ? "#444" : "#e0e0e0"} />
                                         <XAxis 
                                             dataKey="forecastDay" 
                                             type="category"
@@ -629,12 +630,12 @@ const RegionTestPage: React.FC = () => {
                                             };
                                         })}
                                     >
-                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <CartesianGrid strokeDasharray="3 3" stroke={resolvedTheme === "dark" ? "#444" : "#e0e0e0"} />
                                         <XAxis dataKey="model" />
                                         <YAxis />
                                         <Tooltip />
                                         <Legend />
-                                        <Bar dataKey="avgBias" fill="#8884d8" name="Average Bias" />
+                                        <Bar dataKey="avgBias" fill={modelColors[0]} name="Average Bias" />
                                     </BarChart>
                                 </ResponsiveContainer>
                             </div>
