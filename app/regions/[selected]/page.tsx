@@ -9,28 +9,17 @@ import { Alert } from "@heroui/alert";
 import { Skeleton } from "@heroui/skeleton";
 import { Tabs, Tab } from "@heroui/tabs";
 import { Button } from "@heroui/button";
-import { Select, SelectItem } from "@heroui/select";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar,
-} from "recharts";
 import { ArrowLeft, TrendingUp, TrendingDown, Minus } from "lucide-react";
 
 import { Variable } from "@/config/interfaces/Variable";
 import { JSONData } from "@/config/interfaces/JSONData";
+import {
+  TimeseriesByForecastDayChart,
+  RMSEAnalysisChart,
+  BiasAnalysisChart,
+  ModelComparisonTable,
+  ModelPerformanceRadar,
+} from "@/components/charts";
 
 const RegionTestPage: React.FC = () => {
   const { selected } = useParams<{ selected: string }>();
@@ -310,130 +299,6 @@ const RegionTestPage: React.FC = () => {
       </div>
 
       <Tabs className="w-full" defaultSelectedKey="timeseries">
-        <Tab key="timeseries" title="Timeseries">
-          <div className="flex items-center gap-2 sm:gap-4 mb-4 sm:mb-6 overflow-x-auto">
-            <Select
-              className="min-w-[200px] sm:max-w-xs"
-              label="Select Forecast Day"
-              selectedKeys={[selectedForecastDay]}
-              onSelectionChange={(keys) => {
-                const selected = Array.from(keys)[0] as string;
-
-                setSelectedForecastDay(selected);
-              }}
-            >
-              {forecastDayLabels.map((label, index) => (
-                <SelectItem
-                  key={index.toString()}
-                  aria-label={`Forecast day ${label}`}
-                >
-                  {label}
-                </SelectItem>
-              ))}
-            </Select>
-          </div>
-          {region.model.map((model) => (
-            <div key={model.id} className="space-y-3 sm:space-y-4 mt-4 sm:mt-6">
-              <h3 className="text-xl sm:text-2xl font-bold px-2 sm:px-0">
-                {model.label}
-              </h3>
-              {model.variable.map((variable) => {
-                const parsed = parseInt(selectedForecastDay, 10);
-                const forecastDayIndex = Number.isNaN(parsed) ? 0 : parsed;
-                const specificDateLabels = getDateLabels(forecastDayIndex);
-                const chartData = processTimeseriesData(
-                  variable,
-                  forecastDayIndex,
-                  specificDateLabels,
-                );
-
-                return (
-                  <Card key={variable.label} className="p-2 sm:p-0">
-                    <CardHeader className="p-3 sm:p-6 pb-2 sm:pb-3">
-                      <h4 className="text-base sm:text-lg font-semibold truncate">
-                        {variable.label} - {forecastDayLabels[forecastDayIndex]}{" "}
-                        (84 Timesteps)
-                      </h4>
-                    </CardHeader>
-                    <CardBody className="p-3 sm:p-6 pt-2 sm:pt-0">
-                      <div
-                        className="sm:h-[300px]"
-                        style={{
-                          width: "100%",
-                          height: "250px",
-                          minHeight: "250px",
-                        }}
-                      >
-                        <ResponsiveContainer>
-                          <LineChart data={chartData}>
-                            <CartesianGrid
-                              stroke={
-                                resolvedTheme === "dark" ? "#444" : "#e0e0e0"
-                              }
-                              strokeDasharray="3 3"
-                            />
-                            <XAxis
-                              dataKey="date"
-                              label={{
-                                value: "Date",
-                                position: "insideBottom",
-                                offset: -5,
-                                angle: -90,
-                              }}
-                              minTickGap={12}
-                              tickFormatter={(value, index) => {
-                                // Show every 6th tick to reduce crowding
-                                return index % 6 === 0 ? value : "";
-                              }}
-                            />
-                            <Tooltip
-                              contentStyle={{
-                                backgroundColor:
-                                  resolvedTheme === "dark"
-                                    ? "#1f1f1f"
-                                    : "#ffffff",
-                                border: `1px solid ${resolvedTheme === "dark" ? "#444" : "#e0e0e0"}`,
-                                borderRadius: "6px",
-                                color:
-                                  resolvedTheme === "dark"
-                                    ? "#e0e0e0"
-                                    : "#000000",
-                              }}
-                              formatter={(value: any) => [
-                                value?.toFixed(4),
-                                variable.label,
-                              ]}
-                              labelFormatter={(value, payload) => {
-                                const date = payload?.[0]?.payload?.date;
-                                const timestep =
-                                  payload?.[0]?.payload?.timestep;
-
-                                return date
-                                  ? `Timestep ${timestep} • ${date}`
-                                  : `Timestep ${timestep}`;
-                              }}
-                            />
-                            <Legend offset={10} />
-                            <Line
-                              connectNulls
-                              dataKey="value"
-                              dot={false}
-                              name={variable.label}
-                              stroke={modelColors[0]}
-                              strokeWidth={2}
-                              type="monotone"
-                            />
-                          </LineChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </CardBody>
-                  </Card>
-                );
-              })}
-            </div>
-          ))}
-        </Tab>
-
         <Tab key="by-forecast-day" title="By Forecast Day">
           <div className="mt-3 sm:mt-6 space-y-4 sm:space-y-6">
             {forecastDayLabels.map((fdLabel, fdIndex) => (
@@ -492,75 +357,13 @@ const RegionTestPage: React.FC = () => {
                       }
 
                       return (
-                        <div key={variable.label}>
-                          <h4 className="text-base sm:text-lg font-medium mb-2 sm:mb-3 px-1 sm:px-0">
-                            {variable.label}
-                          </h4>
-                          <div
-                            className="sm:h-[300px]"
-                            style={{
-                              width: "100%",
-                              height: "250px",
-                              minHeight: "250px",
-                            }}
-                          >
-                            <ResponsiveContainer>
-                              <LineChart data={consolidatedData}>
-                                <CartesianGrid
-                                  stroke={
-                                    resolvedTheme === "dark"
-                                      ? "#444"
-                                      : "#e0e0e0"
-                                  }
-                                  strokeDasharray="3 3"
-                                />
-                                <XAxis
-                                  dataKey="timestep"
-                                  label={{
-                                    value: "Timestep",
-                                    position: "insideBottom",
-                                    offset: -5,
-                                  }}
-                                />
-                                <YAxis />
-                                <Tooltip
-                                  contentStyle={{
-                                    backgroundColor:
-                                      resolvedTheme === "dark"
-                                        ? "#1f1f1f"
-                                        : "#ffffff",
-                                    border: `1px solid ${resolvedTheme === "dark" ? "#444" : "#e0e0e0"}`,
-                                    borderRadius: "6px",
-                                    color:
-                                      resolvedTheme === "dark"
-                                        ? "#e0e0e0"
-                                        : "#000000",
-                                  }}
-                                  labelFormatter={(value) =>
-                                    `Timestep: ${value}`
-                                  }
-                                />
-                                <Legend />
-                                {region.model.map((model, modelIndex) => (
-                                  <Line
-                                    key={model.id}
-                                    connectNulls
-                                    dataKey={model.label}
-                                    dot={false}
-                                    name={model.label}
-                                    stroke={
-                                      modelColors[
-                                        modelIndex % modelColors.length
-                                      ]
-                                    }
-                                    strokeWidth={2}
-                                    type="monotone"
-                                  />
-                                ))}
-                              </LineChart>
-                            </ResponsiveContainer>
-                          </div>
-                        </div>
+                        <TimeseriesByForecastDayChart
+                          key={variable.label}
+                          consolidatedData={consolidatedData}
+                          modelColors={modelColors}
+                          models={region.model}
+                          variableLabel={variable.label}
+                        />
                       );
                     })}
                   </div>
@@ -634,60 +437,12 @@ const RegionTestPage: React.FC = () => {
               </h3>
             </CardHeader>
             <CardBody className="p-3 sm:p-6 pt-2 sm:pt-0">
-              <div
-                className="sm:h-[350px]"
-                style={{ width: "100%", height: "250px", minHeight: "250px" }}
-              >
-                <ResponsiveContainer>
-                  <LineChart>
-                    <CartesianGrid
-                      stroke={resolvedTheme === "dark" ? "#444" : "#e0e0e0"}
-                      strokeDasharray="3 3"
-                    />
-                    <XAxis
-                      allowDuplicatedCategory={false}
-                      dataKey="forecastDay"
-                      type="category"
-                    />
-                    <YAxis />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor:
-                          resolvedTheme === "dark" ? "#1f1f1f" : "#ffffff",
-                        border: `1px solid ${resolvedTheme === "dark" ? "#444" : "#e0e0e0"}`,
-                        borderRadius: "6px",
-                        color: resolvedTheme === "dark" ? "#e0e0e0" : "#000000",
-                      }}
-                    />
-                    <Legend />
-                    {region.model.map((model, modelIndex) => {
-                      const rmseVar = model.variable.find(
-                        (v) => v.label.toUpperCase() === "RMSE",
-                      );
-
-                      if (!rmseVar) return null;
-
-                      const chartData = processVariableData(
-                        rmseVar,
-                        forecastDayLabels,
-                      );
-
-                      return (
-                        <Line
-                          key={model.id}
-                          data={chartData}
-                          dataKey="value_0"
-                          dot={{ r: 3 }}
-                          name={model.label}
-                          stroke={modelColors[modelIndex % modelColors.length]}
-                          strokeWidth={2}
-                          type="monotone"
-                        />
-                      );
-                    })}
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
+              <RMSEAnalysisChart
+                forecastDayLabels={forecastDayLabels}
+                modelColors={modelColors}
+                models={region.model}
+                processVariableData={processVariableData}
+              />
             </CardBody>
           </Card>
         </Tab>
@@ -700,52 +455,11 @@ const RegionTestPage: React.FC = () => {
               </h3>
             </CardHeader>
             <CardBody className="p-3 sm:p-6 pt-2 sm:pt-0">
-              <div
-                className="sm:h-[350px]"
-                style={{ width: "100%", height: "250px", minHeight: "250px" }}
-              >
-                <ResponsiveContainer>
-                  <BarChart
-                    data={region.model.map((model) => {
-                      const biasVar = model.variable.find(
-                        (v) => v.label.toUpperCase() === "BIAS",
-                      );
-                      const summary = biasVar
-                        ? calculateMetricSummary(biasVar.value)
-                        : { avg: 0, min: 0, max: 0 };
-
-                      return {
-                        model: model.label,
-                        avgBias: summary.avg,
-                        minBias: summary.min,
-                        maxBias: summary.max,
-                      };
-                    })}
-                  >
-                    <CartesianGrid
-                      stroke={resolvedTheme === "dark" ? "#444" : "#e0e0e0"}
-                      strokeDasharray="3 3"
-                    />
-                    <XAxis dataKey="model" />
-                    <YAxis />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor:
-                          resolvedTheme === "dark" ? "#1f1f1f" : "#ffffff",
-                        border: `1px solid ${resolvedTheme === "dark" ? "#444" : "#e0e0e0"}`,
-                        borderRadius: "6px",
-                        color: resolvedTheme === "dark" ? "#e0e0e0" : "#000000",
-                      }}
-                    />
-                    <Legend />
-                    <Bar
-                      dataKey="avgBias"
-                      fill={modelColors[0]}
-                      name="Average Bias"
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+              <BiasAnalysisChart
+                calculateMetricSummary={calculateMetricSummary}
+                modelColors={modelColors}
+                models={region.model}
+              />
             </CardBody>
           </Card>
         </Tab>
@@ -758,60 +472,11 @@ const RegionTestPage: React.FC = () => {
               </h3>
             </CardHeader>
             <CardBody className="p-3 sm:p-6 pt-2 sm:pt-0">
-              <div className="overflow-x-auto -mx-1 sm:mx-0">
-                <table className="w-full border-collapse text-xs sm:text-sm">
-                  <thead>
-                    <tr className="border-b border-default-200">
-                      <th className="text-left p-2 sm:p-3 font-semibold whitespace-nowrap">
-                        Model
-                      </th>
-                      {region.model[0]?.variable.map((variable) => (
-                        <th
-                          key={variable.label}
-                          className="text-left p-2 sm:p-3 font-semibold whitespace-nowrap"
-                        >
-                          {variable.label}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {region.model.map((model, index) => (
-                      <tr
-                        key={model.id}
-                        className={`hover:bg-default-50 ${
-                          index !== region.model.length - 1
-                            ? "border-b border-default-100"
-                            : ""
-                        }`}
-                      >
-                        <td className="p-2 sm:p-3 font-medium whitespace-nowrap">
-                          {model.label}
-                        </td>
-                        {model.variable.map((variable) => {
-                          const summary = calculateMetricSummary(
-                            variable.value,
-                          );
-
-                          return (
-                            <td
-                              key={variable.label}
-                              className="p-2 sm:p-3 whitespace-nowrap"
-                            >
-                              <div className="flex items-center space-x-1 sm:space-x-2">
-                                <span className="font-mono text-sm">
-                                  {summary.avg.toFixed(4)}
-                                </span>
-                                {getTrendIcon(summary.trend)}
-                              </div>
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <ModelComparisonTable
+                calculateMetricSummary={calculateMetricSummary}
+                getTrendIcon={getTrendIcon}
+                models={region.model}
+              />
             </CardBody>
           </Card>
 
@@ -822,60 +487,11 @@ const RegionTestPage: React.FC = () => {
               </h3>
             </CardHeader>
             <CardBody className="p-3 sm:p-6 pt-2 sm:pt-0">
-              <div
-                className="sm:h-[450px]"
-                style={{ width: "100%", height: "300px", minHeight: "300px" }}
-              >
-                <ResponsiveContainer>
-                  <RadarChart
-                    data={region.model[0]?.variable.map((variable) => {
-                      const dataPoint: any = {
-                        metric: variable.label,
-                      };
-
-                      region.model.forEach((model) => {
-                        const modelVar = model.variable.find(
-                          (v) => v.label === variable.label,
-                        );
-
-                        if (modelVar) {
-                          const summary = calculateMetricSummary(
-                            modelVar.value,
-                          );
-
-                          dataPoint[model.label] = summary.avg;
-                        }
-                      });
-
-                      return dataPoint;
-                    })}
-                  >
-                    <PolarGrid />
-                    <PolarAngleAxis dataKey="metric" />
-                    <PolarRadiusAxis />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor:
-                          resolvedTheme === "dark" ? "#1f1f1f" : "#ffffff",
-                        border: `1px solid ${resolvedTheme === "dark" ? "#444" : "#e0e0e0"}`,
-                        borderRadius: "6px",
-                        color: resolvedTheme === "dark" ? "#e0e0e0" : "#000000",
-                      }}
-                    />
-                    <Legend />
-                    {region.model.map((model, index) => (
-                      <Radar
-                        key={model.id}
-                        dataKey={model.label}
-                        fill={modelColors[index % modelColors.length]}
-                        fillOpacity={0.3}
-                        name={model.label}
-                        stroke={modelColors[index % modelColors.length]}
-                      />
-                    ))}
-                  </RadarChart>
-                </ResponsiveContainer>
-              </div>
+              <ModelPerformanceRadar
+                calculateMetricSummary={calculateMetricSummary}
+                modelColors={modelColors}
+                models={region.model}
+              />
             </CardBody>
           </Card>
         </Tab>
