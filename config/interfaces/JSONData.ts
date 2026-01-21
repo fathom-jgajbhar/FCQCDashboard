@@ -7,4 +7,4 @@ export interface JSONData {
     metadata : JSONMetadata;
     date: JSONDataDate[];
     region: Region[];
-}
+} 
