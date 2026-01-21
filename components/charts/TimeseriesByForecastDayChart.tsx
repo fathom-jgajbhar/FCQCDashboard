@@ -14,6 +14,20 @@ import {
 
 import { Model } from "@/config/interfaces/Model";
 
+// High-contrast fallback palette to keep lines visually distinct
+const fallbackPalette = [
+  "#3366CC",
+  "#DC3912",
+  "#FF9900",
+  "#109618",
+  "#990099",
+  "#0099C6",
+  "#DD4477",
+  "#66AA00",
+  "#B82E2E",
+  "#316395",
+];
+
 interface TimeseriesByForecastDayChartProps {
   consolidatedData: Array<Record<string, any>>;
   models: Model[];
@@ -65,18 +79,24 @@ export const TimeseriesByForecastDayChart: React.FC<
               labelFormatter={(value) => `Timestep: ${value}`}
             />
             <Legend />
-            {models.map((model, modelIndex) => (
-              <Line
-                key={model.id}
-                connectNulls
-                dataKey={model.label}
-                dot={false}
-                name={model.label}
-                stroke={modelColors[modelIndex % modelColors.length]}
-                strokeWidth={2}
-                type="monotone"
-              />
-            ))}
+            {models.map((model, modelIndex) => {
+              const color =
+                modelColors[modelIndex % modelColors.length] ||
+                fallbackPalette[modelIndex % fallbackPalette.length];
+
+              return (
+                <Line
+                  key={model.id}
+                  connectNulls
+                  dataKey={model.label}
+                  dot={false}
+                  name={model.label}
+                  stroke={color}
+                  strokeWidth={2}
+                  type="monotone"
+                />
+              );
+            })}
           </LineChart>
         </ResponsiveContainer>
       </div>
