@@ -333,6 +333,12 @@ const RegionTestPage: React.FC = () => {
                                                             />
                                                             <YAxis label={{ value: variable.label, angle: -90, position: 'insideLeft' }} />
                                                             <Tooltip 
+                                                                contentStyle={{
+                                                                    backgroundColor: resolvedTheme === "dark" ? "#1f1f1f" : "#ffffff",
+                                                                    border: `1px solid ${resolvedTheme === "dark" ? "#444" : "#e0e0e0"}`,
+                                                                    borderRadius: "6px",
+                                                                    color: resolvedTheme === "dark" ? "#e0e0e0" : "#000000"
+                                                                }}
                                                                 labelFormatter={(value, payload) => {
                                                                     const date = payload?.[0]?.payload?.date;
                                                                     const timestep = payload?.[0]?.payload?.timestep;
@@ -424,6 +430,12 @@ const RegionTestPage: React.FC = () => {
                                                                 />
                                                                 <YAxis />
                                                                 <Tooltip 
+                                                                    contentStyle={{
+                                                                        backgroundColor: resolvedTheme === "dark" ? "#1f1f1f" : "#ffffff",
+                                                                        border: `1px solid ${resolvedTheme === "dark" ? "#444" : "#e0e0e0"}`,
+                                                                        borderRadius: "6px",
+                                                                        color: resolvedTheme === "dark" ? "#e0e0e0" : "#000000"
+                                                                    }}
                                                                     labelFormatter={(value) => `Timestep: ${value}`}
                                                                 />
                                                                 <Legend />
@@ -441,58 +453,6 @@ const RegionTestPage: React.FC = () => {
                                                                 ))}
                                                             </LineChart>
                                                         </ResponsiveContainer>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                </CardBody>
-                            </Card>
-                        ))}
-                    </div>
-                </Tab>
-
-                <Tab key="overview" title="Overview">
-                    <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        {region.model.map((model) => (
-                            <Card key={model.id}>
-                                <CardHeader>
-                                    <h3 className="text-xl font-semibold">
-                                        {model.label} Model Metrics
-                                    </h3>
-                                </CardHeader>
-                                <CardBody>
-                                    <div className="space-y-4">
-                                        {model.variable.map((variable) => {
-                                            const summary = calculateMetricSummary(variable.value);
-                                            return (
-                                                <div
-                                                    key={variable.label}
-                                                    className="border border-default-200 rounded-lg p-3"
-                                                >
-                                                    <div className="flex items-center justify-between mb-2">
-                                                        <h4 className="font-medium">{variable.label}</h4>
-                                                        {getTrendIcon(summary.trend)}
-                                                    </div>
-                                                    <div className="grid grid-cols-3 gap-2 text-sm">
-                                                        <div>
-                                                            <p className="text-default-500">Min</p>
-                                                            <p className="font-mono">
-                                                                {summary.min.toFixed(4)}
-                                                            </p>
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-default-500">Avg</p>
-                                                            <p className="font-mono">
-                                                                {summary.avg.toFixed(4)}
-                                                            </p>
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-default-500">Max</p>
-                                                            <p className="font-mono">
-                                                                {summary.max.toFixed(4)}
-                                                            </p>
-                                                        </div>
                                                     </div>
                                                 </div>
                                             );
@@ -577,7 +537,14 @@ const RegionTestPage: React.FC = () => {
                                             allowDuplicatedCategory={false}
                                         />
                                         <YAxis />
-                                        <Tooltip />
+                                        <Tooltip 
+                                            contentStyle={{
+                                                backgroundColor: resolvedTheme === "dark" ? "#1f1f1f" : "#ffffff",
+                                                border: `1px solid ${resolvedTheme === "dark" ? "#444" : "#e0e0e0"}`,
+                                                borderRadius: "6px",
+                                                color: resolvedTheme === "dark" ? "#e0e0e0" : "#000000"
+                                            }}
+                                        />
                                         <Legend />
                                         {region.model.map((model, modelIndex) => {
                                             const rmseVar = model.variable.find(
@@ -633,7 +600,14 @@ const RegionTestPage: React.FC = () => {
                                         <CartesianGrid strokeDasharray="3 3" stroke={resolvedTheme === "dark" ? "#444" : "#e0e0e0"} />
                                         <XAxis dataKey="model" />
                                         <YAxis />
-                                        <Tooltip />
+                                        <Tooltip 
+                                            contentStyle={{
+                                                backgroundColor: resolvedTheme === "dark" ? "#1f1f1f" : "#ffffff",
+                                                border: `1px solid ${resolvedTheme === "dark" ? "#444" : "#e0e0e0"}`,
+                                                borderRadius: "6px",
+                                                color: resolvedTheme === "dark" ? "#e0e0e0" : "#000000"
+                                            }}
+                                        />
                                         <Legend />
                                         <Bar dataKey="avgBias" fill={modelColors[0]} name="Average Bias" />
                                     </BarChart>
@@ -727,7 +701,14 @@ const RegionTestPage: React.FC = () => {
                                         <PolarGrid />
                                         <PolarAngleAxis dataKey="metric" />
                                         <PolarRadiusAxis />
-                                        <Tooltip />
+                                        <Tooltip 
+                                            contentStyle={{
+                                                backgroundColor: resolvedTheme === "dark" ? "#1f1f1f" : "#ffffff",
+                                                border: `1px solid ${resolvedTheme === "dark" ? "#444" : "#e0e0e0"}`,
+                                                borderRadius: "6px",
+                                                color: resolvedTheme === "dark" ? "#e0e0e0" : "#000000"
+                                            }}
+                                        />
                                         <Legend />
                                         {region.model.map((model, index) => (
                                             <Radar
